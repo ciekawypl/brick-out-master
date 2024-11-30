@@ -1,0 +1,46 @@
+[gd_scene load_steps=8 format=3 uid="uid://bi277cb1grh8u"]
+
+[ext_resource type="Script" path="res://level/level.gd" id="1_2n6dh"]
+[ext_resource type="PackedScene" uid="uid://h1u1wf5ycwyc" path="res://ball/Ball.tscn" id="1_xagg7"]
+[ext_resource type="PackedScene" uid="uid://c706ufq2gijml" path="res://player/Player.tscn" id="2_fhk8e"]
+[ext_resource type="Script" path="res://level/kill_area.gd" id="4_0brd1"]
+[ext_resource type="PackedScene" uid="uid://j8ww7m4t3nfm" path="res://lose screen/Lose Screen.tscn" id="5_tiojt"]
+[ext_resource type="PackedScene" uid="uid://v4vbt82si4ld" path="res://brick/Brick.tscn" id="6_6uqlu"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_8spuk"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_2n6dh")
+brick_scene = ExtResource("6_6uqlu")
+
+[node name="Border" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Border"]
+build_mode = 1
+polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 648, 0, 648)
+
+[node name="Kill Area" type="Area2D" parent="."]
+position = Vector2(576, 608)
+script = ExtResource("4_0brd1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Kill Area"]
+shape = SubResource("WorldBoundaryShape2D_8spuk")
+
+[node name="Ball" parent="." instance=ExtResource("1_xagg7")]
+position = Vector2(576, 480)
+
+[node name="Player" parent="." instance=ExtResource("2_fhk8e")]
+position = Vector2(576, 544)
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="LoseScreen" parent="Control" instance=ExtResource("5_tiojt")]
+visible = false
+layout_mode = 1
+
+[connection signal="ball_collision" from="Kill Area" to="Control/LoseScreen" method="game_over"]
+[connection signal="body_entered" from="Kill Area" to="Kill Area" method="collision"]
